@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -33,6 +34,7 @@ public class SearchActivity extends AppCompatActivity {
     private Context ctx;
     private List<MapItem> mapItemList = new ArrayList<MapItem>();
     private EditText editText;
+    private TextView qrcodeReslut;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +43,7 @@ public class SearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         editText = (EditText) findViewById(R.id.editText);
+        qrcodeReslut = (TextView) findViewById(R.id.textView);
         ctx = this;
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -53,12 +56,27 @@ public class SearchActivity extends AppCompatActivity {
     public void onClickQrcode(View v){
 
         IntentIntegrator integrator = new IntentIntegrator(this);
-        integrator.setDesiredBarcodeFormats(IntentIntegrator.ONE_D_CODE_TYPES);
+        integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE_TYPES);
         integrator.setPrompt("Scan a barcode");
         integrator.setCameraId(0);  // Use a specific camera of the device
         integrator.setBeepEnabled(false);
         //integrator.setBarcodeImageEnabled(true);
         integrator.initiateScan();
+
+
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == 49374) {
+            if (resultCode == RESULT_OK) {
+                String contents = intent.getStringExtra("SCAN_RESULT");
+                String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
+                qrcodeReslut.setText(contents);
+                // Handle successful scan
+            } else if (resultCode == RESULT_CANCELED) {
+                // Handle cancel
+            }
+        }
     }
 
     private void getResults() {
